@@ -226,11 +226,14 @@ def scan_ahead_info(next_des, strikes, outs, next_outs, current_bases, next_base
         return 'next_pitch'
 
 des_map = {
+	'Automatic Ball':'ball',
+	'Automatic Strike':'strike', 
     'Ball':'ball',
     'Ball In Dirt':'ball',
     'Called Strike':'strike',
     'Foul':'foul',
     'Foul Bunt':'foul',
+    'Foul Pitchout':'foul',
     'Foul (Runner Going)':'foul',
     'Foul Tip':'foul',
     'Hit By Pitch':'hbp',
@@ -239,8 +242,12 @@ des_map = {
     'In play, out(s)':'out',
     'In play, run(s)':'play',
     'Intent Ball':'ball',
+    'Missed Bunt':'strike',
+    'Pitchout':'ball', 
+    'Strike':'strike',
     'Swinging Strike':'strike',
-    'Swinging Strike (Blocked)':'strike'
+    'Swinging Strike (Blocked)':'strike',
+    'Unknown Strike':'strike'
 }
 
 template = pickle.load(open('data/rays-scoreboard'))
@@ -268,9 +275,6 @@ def get_time_stamps(cap, located_scorebox=False, top_left=None, bottom_right=Non
 
 	while True:
 	    j += 1
-
-	    if pitches == len(counts):
-	   		break
 
 	    ret, frame = cap.read()
 
@@ -321,16 +325,17 @@ def get_time_stamps(cap, located_scorebox=False, top_left=None, bottom_right=Non
 	                sys.stdout.flush()
 	        continue  
 	    
-	    to_look_for = scan_ahead_info(
-	                                  des[pitches], 
-	                                  counts[pitches][1], 
-	                                  the_outs,
-	                                  game_outs[pitches],
-	                                  bases[pitches],
-	                                  bases[pitches + 1],
-	                                  counts[pitches],
-	                                  counts[pitches+1]
-	                                             )
+	    if pitches < len(counts) - 1:
+		    to_look_for = scan_ahead_info(
+		                                  des[pitches], 
+		                                  counts[pitches][1], 
+		                                  the_outs,
+		                                  game_outs[pitches],
+		                                  bases[pitches],
+		                                  bases[pitches + 1],
+		                                  counts[pitches],
+		                                  counts[pitches+1]
+		                                             )
 	    
 	    
 	    if j % 25 == 0 and located_scorebox:
